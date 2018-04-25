@@ -5,7 +5,7 @@ authors = ["autodidaddict <alothien@gmail.com>"]
 description = "Event Sourcing for Rust"
 documentation = "https://docs.rs/eventsourcing"
 repository = "https://github.com/pholactery/eventsourcing"
-keywords = ["events", "eventsourcing", "event", "sourcing", "aggregate", "projector"]
+keywords = ["event", "eventsourcing", "aggregate", "projector"]
 categories = ["asynchronous","data-structures","rust-patterns","simulation"]
 readme = "README.md"
 
