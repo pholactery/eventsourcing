@@ -8,5 +8,7 @@ repository = "https://github.com/pholactery/eventsourcing"
 keywords = ["event", "eventsourcing", "aggregate", "projector"]
 categories = ["asynchronous","data-structures","rust-patterns","simulation"]
 readme = "README.md"
+license = "MPL-2.0"
+homepage = "https://github.com/pholactery/eventsourcing"
 
 [dependencies]
