@@ -1,0 +1,12 @@
+[package]
+name = "eventsourcing"
+version = "0.1.0"
+authors = ["autodidaddict <alothien@gmail.com>"]
+description = "Event Sourcing for Rust"
+documentation = "https://docs.rs/eventsourcing"
+repository = "https://github.com/pholactery/eventsourcing"
+keywords = ["events", "eventsourcing", "event", "sourcing", "aggregate", "projector"]
+categories = ["asynchronous","data-structures","rust-patterns","simulation"]
+readme = "README.md"
+
+[dependencies]
