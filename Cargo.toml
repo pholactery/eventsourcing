@@ -12,3 +12,7 @@ license = "MPL-2.0"
 homepage = "https://github.com/pholactery/eventsourcing"
 
 [dependencies]
+chrono = { version = "0.4", features = ["serde"] }
+serde_json = "1.0"
+serde_derive = "1.0"
+serde = "1.0"
