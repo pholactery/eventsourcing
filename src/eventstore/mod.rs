@@ -1,8 +1,15 @@
+use super::Result;
 use chrono::prelude::*;
+use serde::Serialize;
 use std::collections::HashMap;
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct EnrichedEvent<E> {
+pub use self::inmemory::MemoryEventStore;
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct EnrichedEvent<E>
+where
+    E: Clone + Serialize,
+{
     serial_number: String,
     version: u32,
     payload: E,
@@ -12,7 +19,10 @@ pub struct EnrichedEvent<E> {
 
 /// When an Event Store subscribes to events coming out of an aggregate,
 /// they are wrapped/enriched for storage and retrieval
-impl<E> EnrichedEvent<E> {
+impl<E> EnrichedEvent<E>
+where
+    E: Clone + Serialize,
+{
     pub fn new(payload: E, version: u32) -> EnrichedEvent<E> {
         EnrichedEvent {
             serial_number: "foo".to_owned(),
@@ -23,3 +33,12 @@ impl<E> EnrichedEvent<E> {
         }
     }
 }
+
+pub trait EventStore<E>
+where
+    E: Clone + Serialize,
+{
+    fn append(&self, evt: E) -> Result<EnrichedEvent<E>>;
+}
+
+mod inmemory;

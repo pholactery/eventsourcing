@@ -3,7 +3,10 @@ extern crate serde;
 extern crate serde_derive;
 extern crate eventsourcing;
 
-use eventsourcing::{Aggregate, AggregateState, Result};
+use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
+                    Aggregate,
+                    AggregateState,
+                    Result};
 
 #[derive(Debug)]
 struct LocationData {
@@ -19,7 +22,7 @@ impl AggregateState for LocationData {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 enum LocationEvent {
     LocationUpdated { lat: f32, long: f32, alt: f32 },
 }
@@ -53,6 +56,8 @@ impl Aggregate for Location {
 }
 
 fn main() {
+    let location_store = MemoryEventStore::<LocationEvent>::new();
+
     let _update = LocationCommand::UpdateLocation {
         lat: 10.0,
         long: 52.0,
@@ -70,7 +75,9 @@ fn main() {
         long: 20.0,
         alt: 35.0,
     };
+    let store_result = location_store.append(evt.clone());
     let state = Location::apply_event(&old_state, evt).unwrap();
 
+    println!("{:#?}", store_result.unwrap());
     println!("{:#?}", state);
 }
