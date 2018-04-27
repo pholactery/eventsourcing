@@ -6,6 +6,7 @@ extern crate eventsourcing;
 use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
                     Aggregate,
                     AggregateState,
+                    Event,
                     Result};
 
 #[derive(Debug)]
@@ -25,6 +26,22 @@ impl AggregateState for LocationData {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 enum LocationEvent {
     LocationUpdated { lat: f32, long: f32, alt: f32 },
+}
+
+impl From<LocationCommand> for LocationEvent {
+    fn from(source: LocationCommand) -> Self {
+        match source {
+            LocationCommand::UpdateLocation { lat, long, alt } => {
+                LocationEvent::LocationUpdated { lat, long, alt }
+            }
+        }
+    }
+}
+
+impl Event for LocationEvent {
+    fn schema_version(&self) -> u32 {
+        1
+    }
 }
 
 struct Location;
@@ -50,15 +67,18 @@ impl Aggregate for Location {
         Ok(ld)
     }
 
-    fn handle_command(_state: &Self::State, _cmd: Self::Command) -> Result<Vec<Self::Event>> {
-        unimplemented!()
+    fn handle_command(_state: &Self::State, cmd: Self::Command) -> Result<Vec<Self::Event>> {
+        // SHOULD DO: validate state and command
+
+        // if validation passes...
+        Ok(vec![cmd.into()])
     }
 }
 
 fn main() {
     let location_store = MemoryEventStore::<LocationEvent>::new();
 
-    let _update = LocationCommand::UpdateLocation {
+    let update = LocationCommand::UpdateLocation {
         lat: 10.0,
         long: 52.0,
         alt: 31.0,
@@ -77,7 +97,9 @@ fn main() {
     };
     let store_result = location_store.append(evt.clone());
     let state = Location::apply_event(&old_state, evt).unwrap();
+    let res = Location::handle_command(&old_state, update).unwrap();
 
+    println!("{:#?}", res);
     println!("{:#?}", store_result.unwrap());
     println!("{:#?}", state);
 }

@@ -40,12 +40,16 @@ pub enum Kind {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
+pub trait Event: Clone + Serialize {
+    fn schema_version(&self) -> u32;
+}
+
 pub trait AggregateState {
     fn generation(&self) -> u64;
 }
 
 pub trait Aggregate {
-    type Event: Serialize;
+    type Event: Event;
     type Command;
     type State: AggregateState;
 
