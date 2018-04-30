@@ -44,6 +44,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 
 pub trait Event: Serialize {
     fn schema_version(&self) -> u32;
+    fn event_type(&self) -> &str;
 }
 
 pub trait AggregateState {

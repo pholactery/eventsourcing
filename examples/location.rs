@@ -42,6 +42,16 @@ impl Event for LocationEvent {
     fn schema_version(&self) -> u32 {
         1
     }
+
+    fn event_type(&self) -> &str {
+        match self {
+            LocationEvent::LocationUpdated {
+                lat: _,
+                long: _,
+                alt: _,
+            } => "location.location_updated",
+        }
+    }
 }
 
 struct Location;
@@ -99,7 +109,11 @@ fn main() {
     let state = Location::apply_event(&old_state, evt).unwrap();
     let res = Location::handle_command(&old_state, update).unwrap();
 
-    println!("{:#?}", res);
-    println!("{:#?}", store_result.unwrap());
-    println!("{:#?}", state);
+    println!("handle command - {:#?}", res);
+    println!("append to store - {:#?}", store_result.unwrap());
+    println!("apply event - {:#?}", state);
+    println!(
+        "all events - {:#?}",
+        location_store.get_all("location.location_updated")
+    );
 }
