@@ -2,6 +2,8 @@ extern crate chrono;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate serde_json;
+extern crate uuid;
 
 use serde::Serialize;
 use std::fmt;
@@ -40,7 +42,7 @@ pub enum Kind {
 
 pub type Result<T> = std::result::Result<T, Error>;
 
-pub trait Event: Clone + Serialize {
+pub trait Event: Serialize {
     fn schema_version(&self) -> u32;
 }
 

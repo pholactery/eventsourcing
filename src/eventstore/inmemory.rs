@@ -3,29 +3,20 @@ use super::super::Result;
 use super::{EnrichedEvent, EventStore};
 use std::sync::Mutex;
 
-pub struct MemoryEventStore<E>
-where
-    E: Event,
-{
-    evts: Mutex<Vec<EnrichedEvent<E>>>,
+pub struct MemoryEventStore {
+    evts: Mutex<Vec<EnrichedEvent>>,
 }
 
-impl<E> MemoryEventStore<E>
-where
-    E: Event,
-{
-    pub fn new() -> MemoryEventStore<E> {
+impl MemoryEventStore {
+    pub fn new() -> MemoryEventStore {
         MemoryEventStore {
-            evts: Mutex::new(Vec::<EnrichedEvent<E>>::new()),
+            evts: Mutex::new(Vec::<EnrichedEvent>::new()),
         }
     }
 }
 
-impl<E> EventStore<E> for MemoryEventStore<E>
-where
-    E: Event,
-{
-    fn append(&self, evt: E) -> Result<EnrichedEvent<E>> {
+impl EventStore for MemoryEventStore {
+    fn append(&self, evt: impl Event) -> Result<EnrichedEvent> {
         let mut guard = self.evts.lock().unwrap();
         let enriched = EnrichedEvent::from(evt);
         guard.push(enriched.clone());

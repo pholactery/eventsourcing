@@ -76,7 +76,7 @@ impl Aggregate for Location {
 }
 
 fn main() {
-    let location_store = MemoryEventStore::<LocationEvent>::new();
+    let location_store = MemoryEventStore::new();
 
     let update = LocationCommand::UpdateLocation {
         lat: 10.0,
