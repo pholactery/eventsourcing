@@ -5,7 +5,7 @@ extern crate serde_derive;
 extern crate eventsourcing_derive;
 extern crate eventsourcing;
 
-use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
+use eventsourcing::{eventstore::{EnrichedEvent, EventStore, MemoryEventStore},
                     Aggregate,
                     AggregateState,
                     Dispatcher,
@@ -87,6 +87,10 @@ fn main() {
         generation: 0,
     };
 
-    let res = CombatDispatcher::dispatch(&state, swing);
-    println!("{:#?}", res);
+    let res = CombatDispatcher::dispatch(&state, swing, &combat_store);
+    println!("dispatch results - {:#?}", res);
+    println!(
+        "store contents - {:#?}",
+        combat_store.get_all("combat.entity_attacked")
+    );
 }

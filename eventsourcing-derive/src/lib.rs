@@ -64,10 +64,14 @@ fn impl_component(ast: &DeriveInput) -> Tokens {
             type Command = <#aggregate as Aggregate>::Command;
             type State = <#aggregate as Aggregate>::State;
 
-            fn dispatch(state: &Self::State, cmd: Self::Command) -> Result<()> {
+            fn dispatch(
+                state: &Self::State,
+                cmd: Self::Command,
+                store: &impl ::eventsourcing::eventstore::EventStore,
+            ) -> Vec<Result<::eventsourcing::eventstore::EnrichedEvent>> {
                 match Self::Aggregate::handle_command(state, cmd) {
-                  Ok(_) => Ok(()),
-                  Err(e) => Err(e),
+                    Ok(evts) => evts.into_iter().map(|evt| store.append(evt)).collect(),
+                    Err(e) => vec![Err(e)],
                 }
             }
         }

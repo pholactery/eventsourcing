@@ -5,6 +5,8 @@ extern crate serde_derive;
 extern crate serde_json;
 extern crate uuid;
 
+use eventstore::EnrichedEvent;
+use eventstore::EventStore;
 use serde::Serialize;
 use std::fmt;
 
@@ -66,7 +68,11 @@ pub trait Dispatcher {
     type State: AggregateState;
     type Aggregate: Aggregate<Event = Self::Event, Command = Self::Command, State = Self::State>;
 
-    fn dispatch(state: &Self::State, cmd: Self::Command) -> Result<()>;
+    fn dispatch(
+        state: &Self::State,
+        cmd: Self::Command,
+        store: &impl EventStore,
+    ) -> Vec<Result<EnrichedEvent>>;
 }
 
 pub mod eventstore;
