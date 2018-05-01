@@ -60,4 +60,13 @@ pub trait Aggregate {
     fn handle_command(state: &Self::State, cmd: Self::Command) -> Result<Vec<Self::Event>>;
 }
 
+pub trait Dispatcher {
+    type Command;
+    type Event: Event;
+    type State: AggregateState;
+    type Aggregate: Aggregate<Event = Self::Event, Command = Self::Command, State = Self::State>;
+
+    fn dispatch(state: &Self::State, cmd: Self::Command) -> Result<()>;
+}
+
 pub mod eventstore;

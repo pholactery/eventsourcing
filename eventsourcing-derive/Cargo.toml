@@ -1,0 +1,18 @@
+[package]
+name = "eventsourcing-derive"
+version = "0.1.0"
+authors = ["autodidaddict <alothien@gmail.com>"]
+description = "Custom derive macros for Eventsourcing components"
+documentation = "https://docs.rs/eventsourcing-derive"
+repository = "https://github.com/pholactery/eventsourcing/eventsourcing-derive"
+keywords = ["event", "eventsourcing", "aggregate", "projector"]
+categories = ["asynchronous","data-structures","rust-patterns","simulation"]
+license = "MPL-2.0"
+homepage = "https://github.com/pholactery/eventsourcing"
+
+[dependencies]
+syn = "0.12"
+quote = "0.4"
+
+[lib]
+proc-macro = true
