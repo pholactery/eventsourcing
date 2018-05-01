@@ -74,24 +74,8 @@ impl Aggregate for Combat {
 }
 
 #[derive(Dispatcher)]
-#[event(CombatEvent)]
-#[command(CombatCommand)]
 #[aggregate(Combat)]
-#[state(CombatState)]
 struct CombatDispatcher;
-/*impl Dispatcher for CombatDispatcher {
-    type Command = CombatCommand;
-    type Event = CombatEvent;
-    type State = CombatState;
-    type Aggregate = Combat;
-
-    fn dispatch(state: &Self::State, cmd: Self::Command) -> Result<()> {
-        match Self::Aggregate::handle_command(state, cmd) {
-            Ok(_) => Ok(()),
-            Err(e) => Err(e),
-        }
-    }
-}*/
 
 fn main() {
     let combat_store = MemoryEventStore::new();
