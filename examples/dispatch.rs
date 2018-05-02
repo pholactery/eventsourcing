@@ -1,3 +1,5 @@
+#![feature(attr_literals)]
+
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -17,21 +19,12 @@ enum CombatCommand {
     Attack(String, u32),
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Event)]
+#[schema_version(1)]
 enum CombatEvent {
     EntityAttacked(String, u32),
-}
-
-impl Event for CombatEvent {
-    fn schema_version(&self) -> u32 {
-        1
-    }
-
-    fn event_type(&self) -> &str {
-        match self {
-            CombatEvent::EntityAttacked(_, _) => "combat.entity_attacked",
-        }
-    }
+    RandomEvent { a: u32, b: u32},
+    UnitEvent,
 }
 
 impl From<CombatCommand> for CombatEvent {
@@ -87,10 +80,15 @@ fn main() {
         generation: 0,
     };
 
+    let rando = CombatEvent::RandomEvent { a: 12, b: 13};
+    println!("{}", rando.event_type());
+    let unit = CombatEvent::UnitEvent;
+    println!("{}", unit.event_type());
+
     let res = CombatDispatcher::dispatch(&state, swing, &combat_store);
     println!("dispatch results - {:#?}", res);
     println!(
         "store contents - {:#?}",
-        combat_store.get_all("combat.entity_attacked")
+        combat_store.get_all("combatevent.entityattacked")
     );
 }
