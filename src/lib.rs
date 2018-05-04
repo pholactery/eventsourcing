@@ -76,3 +76,4 @@ pub trait Dispatcher {
 }
 
 pub mod eventstore;
+pub mod prelude;

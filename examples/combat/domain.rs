@@ -1,12 +1,3 @@
-#![feature(attr_literals)]
-
-extern crate serde;
-#[macro_use]
-extern crate serde_derive;
-#[macro_use]
-extern crate eventsourcing_derive;
-extern crate eventsourcing;
-
 use eventsourcing::{eventstore::{EnrichedEvent, EventStore, MemoryEventStore},
                     Aggregate,
                     AggregateState,
@@ -15,13 +6,13 @@ use eventsourcing::{eventstore::{EnrichedEvent, EventStore, MemoryEventStore},
                     Result};
 
 #[derive(Debug)]
-enum CombatCommand {
+pub enum CombatCommand {
     Attack(String, u32),
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Event)]
 #[schema_version(1)]
-enum CombatEvent {
+pub enum CombatEvent {
     EntityAttacked(String, u32),
     RandomEvent { a: u32, b: u32},
     UnitEvent,
@@ -35,10 +26,10 @@ impl From<CombatCommand> for CombatEvent {
     }
 }
 
-struct CombatState {
-    entity_id: String,
-    hitpoints: u32,
-    generation: u64,
+pub struct CombatState {
+    pub entity_id: String,
+    pub hitpoints: u32,
+    pub generation: u64,
 }
 
 impl AggregateState for CombatState {
@@ -47,7 +38,7 @@ impl AggregateState for CombatState {
     }
 }
 
-struct Combat;
+pub struct Combat;
 impl Aggregate for Combat {
     type Event = CombatEvent;
     type Command = CombatCommand;
@@ -68,27 +59,4 @@ impl Aggregate for Combat {
 
 #[derive(Dispatcher)]
 #[aggregate(Combat)]
-struct CombatDispatcher;
-
-fn main() {
-    let combat_store = MemoryEventStore::new();
-    let swing = CombatCommand::Attack("ogre".to_owned(), 150);
-
-    let state = CombatState {
-        entity_id: "ogre".to_owned(),
-        hitpoints: 900,
-        generation: 0,
-    };
-
-    let rando = CombatEvent::RandomEvent { a: 12, b: 13};
-    println!("{}", rando.event_type());
-    let unit = CombatEvent::UnitEvent;
-    println!("{}", unit.event_type());
-
-    let res = CombatDispatcher::dispatch(&state, swing, &combat_store);
-    println!("dispatch results - {:#?}", res);
-    println!(
-        "store contents - {:#?}",
-        combat_store.get_all("combatevent.entityattacked")
-    );
-}
+pub struct CombatDispatcher;
