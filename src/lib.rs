@@ -5,8 +5,8 @@ extern crate serde_derive;
 extern crate serde_json;
 extern crate uuid;
 
-use eventstore::EnrichedEvent;
 use eventstore::EventStore;
+use cloudevents::CloudEvent;
 use serde::Serialize;
 use std::fmt;
 
@@ -45,8 +45,9 @@ pub enum Kind {
 pub type Result<T> = std::result::Result<T, Error>;
 
 pub trait Event: Serialize {
-    fn schema_version(&self) -> u32;
+    fn event_type_version(&self) -> &str;
     fn event_type(&self) -> &str;
+    fn event_source(&self) -> &str;
 }
 
 pub trait AggregateState {
@@ -72,8 +73,9 @@ pub trait Dispatcher {
         state: &Self::State,
         cmd: Self::Command,
         store: &impl EventStore,
-    ) -> Vec<Result<EnrichedEvent>>;
+    ) -> Vec<Result<CloudEvent>>;
 }
 
 pub mod eventstore;
 pub mod prelude;
+pub mod cloudevents;

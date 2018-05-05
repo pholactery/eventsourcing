@@ -9,7 +9,7 @@ extern crate syn;
 use proc_macro::TokenStream;
 use quote::Tokens;
 use syn::synom::Synom;
-use syn::{DeriveInput, Path, LitInt, Variant, Ident, Data, Fields, DataEnum};
+use syn::{DeriveInput, Path, LitStr, Variant, Ident, Data, Fields, DataEnum};
 use syn::punctuated::{Punctuated};
 use syn::token::Comma;
 
@@ -20,7 +20,7 @@ pub fn component(input: TokenStream) -> TokenStream {
     gen.into()
 }
 
-#[proc_macro_derive(Event, attributes(schema_version))]
+#[proc_macro_derive(Event, attributes(event_type_version, event_source))]
 pub fn component_event(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();
     let gen = match ast.data {
@@ -38,12 +38,23 @@ pub fn component_event(input: TokenStream) -> TokenStream {
     gen.into()
 }
 
-struct SchemaVersionAttribute {
-    schema_version: LitInt,
+struct EventSourceAttribute {
+    event_source: LitStr,
+}
+
+struct EventTypeVersionAttribute {
+    event_type_version: LitStr,
 }
 
 struct AggregateAttribute {
     aggregate: Path,
+}
+
+impl Synom for EventSourceAttribute {
+    named!(parse -> Self, map!(
+        parens!(syn!(LitStr)),
+        |(_, event_source)| EventSourceAttribute { event_source }
+    ));
 }
 
 impl Synom for AggregateAttribute {
@@ -53,10 +64,10 @@ impl Synom for AggregateAttribute {
     ));
 }
 
-impl Synom for SchemaVersionAttribute {
+impl Synom for EventTypeVersionAttribute {
     named!(parse -> Self, map!(
-        parens!(syn!(LitInt)),
-        |(_, schema_version) | SchemaVersionAttribute { schema_version }
+        parens!(syn!(LitStr)),
+        |(_, event_type_version) | EventTypeVersionAttribute { event_type_version }
     ));
 }
 
@@ -64,29 +75,50 @@ fn impl_component_event(ast: &DeriveInput, data_enum: &DataEnum) -> Tokens {
     let name = &ast.ident;
     let variants = &data_enum.variants;
     let (impl_generics, _ty_generics, where_clause) = ast.generics.split_for_impl();
-    let schema_version = ast.attrs
+    let event_type_version = ast.attrs
         .iter()
-        .find(|attr| attr.path.segments[0].ident == "schema_version")
+        .find(|attr| attr.path.segments[0].ident == "event_type_version")
         .map(|attr| {
-            let x = syn::parse2::<SchemaVersionAttribute>(attr.tts.clone())
+            let x = syn::parse2::<EventTypeVersionAttribute>(attr.tts.clone())
                 .unwrap()
-                .schema_version;
+                .event_type_version;
             x
         })
         .unwrap_or_else(|| parse_quote!(NoSchemaVersion));
+
+    let event_source = ast.attrs
+        .iter()
+        .find(|attr| attr.path.segments[0].ident == "event_source")
+        .map(|attr| {
+            let x = syn::parse2::<EventSourceAttribute>(attr.tts.clone())
+                .unwrap()
+                .event_source;
+            x
+        })
+        .unwrap_or_else(|| parse_quote!(NoEventSource));
 
     let event_matches = generate_event_matches(&name, &variants);
 
     quote! {
         impl #impl_generics ::eventsourcing::Event for #name #where_clause {
-            fn schema_version(&self) -> u32 {
-                #schema_version
+            fn event_type_version(&self) -> &str {
+                #event_type_version
+            }
+
+            fn event_source(&self) -> &str {
+                #event_source
             }
 
             fn event_type(&self) -> &str {
                 match self {
                     #(#event_matches)*
                 }
+            }
+        }
+
+        impl From<::eventsourcing::cloudevents::CloudEvent> for #name {
+            fn from(__source: ::eventsourcing::cloudevents::CloudEvent) -> Self {
+                ::serde_json::from_str(&::serde_json::to_string(&__source.data).unwrap()).unwrap()
             }
         }
     }
@@ -110,7 +142,7 @@ fn generate_event_matches(name: &Ident, variants: &Punctuated<Variant, Comma>) -
             Fields::Named(ref fields) => {
                 let idents: Vec<_> = fields.named.pairs().map(|p| p.value().ident).collect();
                 quote! {
-                    #name::#id { #(#idents,)* } => #et_name,
+                    #name::#id { #(#idents: _,)* } => #et_name,
                 }
             }
         };
@@ -150,7 +182,7 @@ fn impl_component(ast: &DeriveInput) -> Tokens {
                 state: &Self::State,
                 cmd: Self::Command,
                 store: &impl ::eventsourcing::eventstore::EventStore,
-            ) -> Vec<Result<::eventsourcing::eventstore::EnrichedEvent>> {
+            ) -> Vec<Result<::eventsourcing::cloudevents::CloudEvent>> {
                 match Self::Aggregate::handle_command(state, cmd) {
                     Ok(evts) => evts.into_iter().map(|evt| store.append(evt)).collect(),
                     Err(e) => vec![Err(e)],

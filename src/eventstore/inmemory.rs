@@ -1,30 +1,33 @@
 use super::super::Event;
 use super::super::Result;
-use super::{EnrichedEvent, EventStore};
+use super::{EventStore};
+use super::super::cloudevents::CloudEvent;
 use chrono::prelude::*;
 use std::sync::Mutex;
+use serde::Serialize;
 
 pub struct MemoryEventStore {
-    evts: Mutex<Vec<EnrichedEvent>>,
+    evts: Mutex<Vec<CloudEvent>>,
 }
 
 impl MemoryEventStore {
     pub fn new() -> MemoryEventStore {
         MemoryEventStore {
-            evts: Mutex::new(Vec::<EnrichedEvent>::new()),
+            evts: Mutex::new(Vec::<CloudEvent>::new()),
         }
     }
 }
 
-impl EventStore for MemoryEventStore {
-    fn append(&self, evt: impl Event) -> Result<EnrichedEvent> {
+impl EventStore for MemoryEventStore
+{
+    fn append(&self, evt: impl Event) -> Result<CloudEvent> {
         let mut guard = self.evts.lock().unwrap();
-        let enriched = EnrichedEvent::from(evt);
-        guard.push(enriched.clone());
-        Ok(enriched)
+        let cloud_event = CloudEvent::from(evt);
+        guard.push(cloud_event.clone());
+        Ok(cloud_event)
     }
 
-    fn get_all(&self, event_type: &str) -> Result<Vec<EnrichedEvent>> {
+    fn get_all(&self, event_type: &str) -> Result<Vec<CloudEvent>> {
         let guard = self.evts.lock().unwrap();
         let matches = guard
             .iter()
@@ -35,11 +38,11 @@ impl EventStore for MemoryEventStore {
         Ok(matches)
     }
 
-    fn get_from(&self, event_type: &str, start: DateTime<Utc>) -> Result<Vec<EnrichedEvent>> {
+    fn get_from(&self, event_type: &str, start: DateTime<Utc>) -> Result<Vec<CloudEvent>> {
         let guard = self.evts.lock().unwrap();
         let matches = guard
             .iter()
-            .filter(|evt| evt.event_type == event_type && evt.timestamp >= start)
+            .filter(|evt| evt.event_type == event_type && evt.event_time >= start)
             .cloned()
             .collect();
         Ok(matches)
@@ -50,12 +53,12 @@ impl EventStore for MemoryEventStore {
         event_type: &str,
         start: DateTime<Utc>,
         end: DateTime<Utc>,
-    ) -> Result<Vec<EnrichedEvent>> {
+    ) -> Result<Vec<CloudEvent>> {
         let guard = self.evts.lock().unwrap();
         let matches = guard
             .iter()
             .filter(|evt| {
-                evt.event_type == event_type && evt.timestamp >= start && evt.timestamp <= end
+                evt.event_type == event_type && evt.event_time >= start && evt.event_time <= end
             })
             .cloned()
             .collect();

@@ -1,4 +1,4 @@
-use eventsourcing::{eventstore::{EnrichedEvent, EventStore, MemoryEventStore},
+use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
                     Aggregate,
                     AggregateState,
                     Dispatcher,
@@ -11,7 +11,8 @@ pub enum CombatCommand {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Event)]
-#[schema_version(1)]
+#[event_type_version("1.0")]
+#[event_source("events://github.com/pholactery/eventsourcing/samples/combat")]
 pub enum CombatEvent {
     EntityAttacked(String, u32),
     RandomEvent { a: u32, b: u32},

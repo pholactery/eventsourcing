@@ -1,7 +1,12 @@
+#![feature(attr_literals)]
+
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
+extern crate serde_json;
 extern crate eventsourcing;
+#[macro_use]
+extern crate eventsourcing_derive;
 
 use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
                     Aggregate,
@@ -9,23 +14,12 @@ use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
                     Event,
                     Result};
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Event)]
+#[event_type_version("1.0")]
+#[event_source("events://github.com/pholactery/eventsourcing/samples/bank")]
 enum BankEvent {
     FundsWithdrawn(String, u32),
     FundsDeposited(String, u32),
-}
-
-impl Event for BankEvent {
-    fn schema_version(&self) -> u32 {
-        1
-    }
-
-    fn event_type(&self) -> &str {
-        match self {
-            BankEvent::FundsWithdrawn(_, _) => "bank.withdrawal",
-            BankEvent::FundsDeposited(_, _) => "bank.deposit",
-        }
-    }
 }
 
 enum BankCommand {

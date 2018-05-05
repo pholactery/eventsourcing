@@ -5,6 +5,7 @@ extern crate serde;
 extern crate serde_derive;
 #[macro_use]
 extern crate eventsourcing_derive;
+extern crate serde_json;
 extern crate eventsourcing;
 
 mod domain;

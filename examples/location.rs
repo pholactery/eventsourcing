@@ -1,7 +1,12 @@
+#![feature(attr_literals)]
+
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate eventsourcing;
+extern crate serde_json;
+#[macro_use]
+extern crate eventsourcing_derive;
 
 use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
                     Aggregate,
@@ -23,7 +28,9 @@ impl AggregateState for LocationData {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Event)]
+#[event_type_version("1.0")]
+#[event_source("events://github.com/pholactery/eventsourcing/samples/location")]
 enum LocationEvent {
     LocationUpdated { lat: f32, long: f32, alt: f32 },
 }
@@ -34,22 +41,6 @@ impl From<LocationCommand> for LocationEvent {
             LocationCommand::UpdateLocation { lat, long, alt } => {
                 LocationEvent::LocationUpdated { lat, long, alt }
             }
-        }
-    }
-}
-
-impl Event for LocationEvent {
-    fn schema_version(&self) -> u32 {
-        1
-    }
-
-    fn event_type(&self) -> &str {
-        match self {
-            LocationEvent::LocationUpdated {
-                lat: _,
-                long: _,
-                alt: _,
-            } => "location.location_updated",
         }
     }
 }
@@ -114,6 +105,6 @@ fn main() {
     println!("apply event - {:#?}", state);
     println!(
         "all events - {:#?}",
-        location_store.get_all("location.location_updated")
+        location_store.get_all("locationevent.locationupdated")
     );
 }
