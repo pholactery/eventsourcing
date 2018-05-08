@@ -20,7 +20,7 @@ enum TestEvent {
 }
 
 #[test]
-fn cloud_event_roundtrip() {
+    fn cloud_event_roundtrip() {
     // ensure that we can produce a cloud event with an arbitrary nested JSON value in the data
     // field and serialize it, then deserialize it, and still be able to convert the serde_json::Value
     // back into the original raw event type.
