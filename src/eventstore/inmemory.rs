@@ -20,14 +20,16 @@ impl MemoryEventStore {
 
 impl EventStore for MemoryEventStore
 {
-    fn append(&self, evt: impl Event) -> Result<CloudEvent> {
+    fn append(&self, evt: impl Event, _stream: &str) -> Result<CloudEvent> {
         let mut guard = self.evts.lock().unwrap();
         let cloud_event = CloudEvent::from(evt);
         guard.push(cloud_event.clone());
         Ok(cloud_event)
     }
+}
 
-    fn get_all(&self, event_type: &str) -> Result<Vec<CloudEvent>> {
+impl MemoryEventStore {
+    pub fn get_all(&self, event_type: &str) -> Result<Vec<CloudEvent>> {
         let guard = self.evts.lock().unwrap();
         let matches = guard
             .iter()
@@ -38,7 +40,7 @@ impl EventStore for MemoryEventStore
         Ok(matches)
     }
 
-    fn get_from(&self, event_type: &str, start: DateTime<Utc>) -> Result<Vec<CloudEvent>> {
+    pub fn get_from(&self, event_type: &str, start: DateTime<Utc>) -> Result<Vec<CloudEvent>> {
         let guard = self.evts.lock().unwrap();
         let matches = guard
             .iter()
@@ -48,7 +50,7 @@ impl EventStore for MemoryEventStore
         Ok(matches)
     }
 
-    fn get_range(
+    pub fn get_range(
         &self,
         event_type: &str,
         start: DateTime<Utc>,

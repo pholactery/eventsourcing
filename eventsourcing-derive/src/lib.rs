@@ -182,9 +182,10 @@ fn impl_component(ast: &DeriveInput) -> Tokens {
                 state: &Self::State,
                 cmd: Self::Command,
                 store: &impl ::eventsourcing::eventstore::EventStore,
+                stream: &str,
             ) -> Vec<Result<::eventsourcing::cloudevents::CloudEvent>> {
                 match Self::Aggregate::handle_command(state, cmd) {
-                    Ok(evts) => evts.into_iter().map(|evt| store.append(evt)).collect(),
+                    Ok(evts) => evts.into_iter().map(|evt| store.append(evt, stream)).collect(),
                     Err(e) => vec![Err(e)],
                 }
             }

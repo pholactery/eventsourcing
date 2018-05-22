@@ -96,7 +96,7 @@ fn main() {
         long: 20.0,
         alt: 35.0,
     };
-    let store_result = location_store.append(evt.clone());
+    let store_result = location_store.append(evt.clone(), "locations");
     let state = Location::apply_event(&old_state, evt).unwrap();
     let res = Location::handle_command(&old_state, update).unwrap();
 

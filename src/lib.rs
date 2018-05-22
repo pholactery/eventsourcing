@@ -30,6 +30,7 @@ impl fmt::Display for Error {
         match self.kind {
             Kind::ApplicationFailure(ref s) => fmt::Display::fmt(s, f),
             Kind::CommandFailure(ref s) => fmt::Display::fmt(s, f),
+            Kind::StoreFailure(ref s) => fmt::Display::fmt(s, f),
         }
     }
 }
@@ -40,6 +41,7 @@ impl fmt::Display for Error {
 pub enum Kind {
     ApplicationFailure(String),
     CommandFailure(String),
+    StoreFailure(String),
 }
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -73,6 +75,7 @@ pub trait Dispatcher {
         state: &Self::State,
         cmd: Self::Command,
         store: &impl EventStore,
+        stream: &str
     ) -> Vec<Result<CloudEvent>>;
 }
 

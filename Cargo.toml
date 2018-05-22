@@ -17,9 +17,23 @@ serde_json = "1.0"
 serde_derive = "1.0"
 serde = "1.0"
 uuid =  { version = "0.6", features = ["v4"] }
+reqwest = { version = "0.8.5", optional = true }
+
+[features]
+default = []
+orgeventstore = ["reqwest"]
 
 [dev-dependencies]
 eventsourcing-derive = { path = "eventsourcing-derive", version = "0.1.0"}
 
 [workspace]
 members = ["eventsourcing-derive"]
+
+[[example]]
+name = "combat"
+
+[[example]]
+name = "bank"
+
+[[example]]
+name = "location"

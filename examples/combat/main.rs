@@ -11,11 +11,12 @@ extern crate eventsourcing;
 mod domain;
 
 use eventsourcing::prelude::*;
-use eventsourcing::eventstore::MemoryEventStore;
+//use eventsourcing::eventstore::MemoryEventStore;
+use eventsourcing::eventstore::OrgEventStore;
 use domain::{CombatCommand, CombatDispatcher, CombatEvent, Combat, CombatState};
 
 fn main() {
-    let combat_store = MemoryEventStore::new();
+    let combat_store = OrgEventStore::new("localhost", 2113);
     let swing = CombatCommand::Attack("ogre".to_owned(), 150);
 
     let state = CombatState {
@@ -29,10 +30,6 @@ fn main() {
     let unit = CombatEvent::UnitEvent;
     println!("{}", unit.event_type());
 
-    let res = CombatDispatcher::dispatch(&state, swing, &combat_store);
+    let res = CombatDispatcher::dispatch(&state, swing, &combat_store, "ogre");
     println!("dispatch results - {:#?}", res);
-    println!(
-        "store contents - {:#?}",
-        combat_store.get_all("combatevent.entityattacked")
-    );
 }

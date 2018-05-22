@@ -7,6 +7,9 @@ use super::cloudevents::CloudEvent;
 
 pub use self::inmemory::MemoryEventStore;
 
+#[cfg(feature = "orgeventstore")]
+pub use self::orgeventstore::OrgEventStore;
+
 /*
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct EnrichedEvent {
@@ -33,15 +36,9 @@ where
 } */
 pub trait EventStore {    
 
-    fn append(&self, evt: impl Event) -> Result<CloudEvent>;
-    fn get_all(&self, event_type: &str) -> Result<Vec<CloudEvent>>;
-    fn get_from(&self, event_type: &str, start: DateTime<Utc>) -> Result<Vec<CloudEvent>>;
-    fn get_range(
-        &self,
-        event_type: &str,
-        start: DateTime<Utc>,
-        end: DateTime<Utc>,
-    ) -> Result<Vec<CloudEvent>>;
+    fn append(&self, evt: impl Event, stream: &str) -> Result<CloudEvent>;
 }
 
 mod inmemory;
+#[cfg(feature = "orgeventstore")]
+mod orgeventstore;
