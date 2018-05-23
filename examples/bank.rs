@@ -3,16 +3,12 @@
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-extern crate serde_json;
 extern crate eventsourcing;
+extern crate serde_json;
 #[macro_use]
 extern crate eventsourcing_derive;
 
-use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
-                    Aggregate,
-                    AggregateState,
-                    Event,
-                    Result};
+use eventsourcing::{eventstore::MemoryEventStore, prelude::*, Result};
 
 #[derive(Serialize, Deserialize, Debug, Clone, Event)]
 #[event_type_version("1.0")]

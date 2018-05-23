@@ -1,11 +1,11 @@
 [package]
 name = "eventsourcing"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["autodidaddict <alothien@gmail.com>"]
 description = "Event Sourcing for Rust"
 documentation = "https://docs.rs/eventsourcing"
 repository = "https://github.com/pholactery/eventsourcing"
-keywords = ["event", "eventsourcing", "aggregate", "projector"]
+keywords = ["event", "eventsourcing", "aggregate", "command"]
 categories = ["asynchronous","data-structures","rust-patterns","simulation"]
 readme = "README.md"
 license = "MPL-2.0"
@@ -24,7 +24,7 @@ default = []
 orgeventstore = ["reqwest"]
 
 [dev-dependencies]
-eventsourcing-derive = { path = "eventsourcing-derive", version = "0.1.0"}
+eventsourcing-derive = { path = "eventsourcing-derive", version = "0.1.1"}
 
 [workspace]
 members = ["eventsourcing-derive"]
@@ -37,3 +37,7 @@ name = "bank"
 
 [[example]]
 name = "location"
+
+[package.metadata.docs.rs]
+no-default-features = true
+all-features = true

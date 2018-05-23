@@ -1,3 +1,6 @@
+//! # EventSourcing Derive
+//!
+//! Macro implementations for custom derivations for the *eventsourcing* crate
 #![recursion_limit = "128"]
 
 extern crate proc_macro;
@@ -8,11 +11,12 @@ extern crate syn;
 
 use proc_macro::TokenStream;
 use quote::Tokens;
+use syn::punctuated::Punctuated;
 use syn::synom::Synom;
-use syn::{DeriveInput, Path, LitStr, Variant, Ident, Data, Fields, DataEnum};
-use syn::punctuated::{Punctuated};
 use syn::token::Comma;
+use syn::{Data, DataEnum, DeriveInput, Fields, Ident, LitStr, Path, Variant};
 
+/// Derives the boilerplate code for a Dispatcher
 #[proc_macro_derive(Dispatcher, attributes(aggregate))]
 pub fn component(input: TokenStream) -> TokenStream {
     let ast = syn::parse(input).unwrap();
@@ -20,19 +24,18 @@ pub fn component(input: TokenStream) -> TokenStream {
     gen.into()
 }
 
+/// Derives the boilerplate code for an Event
 #[proc_macro_derive(Event, attributes(event_type_version, event_source))]
 pub fn component_event(input: TokenStream) -> TokenStream {
     let ast: DeriveInput = syn::parse(input).unwrap();
     let gen = match ast.data {
         Data::Enum(ref data_enum) => impl_component_event(&ast, data_enum),
-        Data::Struct(_) =>
-            quote! {
-                panic!("#[derive(Event)] is only defined for enums, not structs")
-            },
-        Data::Union(_) =>
-            quote! {
-                panic!("#[derive(Event)] is only defined for enums, not unions")
-            }
+        Data::Struct(_) => quote! {
+            panic!("#[derive(Event)] is only defined for enums, not structs")
+        },
+        Data::Union(_) => quote! {
+            panic!("#[derive(Event)] is only defined for enums, not unions")
+        },
     };
 
     gen.into()
@@ -75,7 +78,8 @@ fn impl_component_event(ast: &DeriveInput, data_enum: &DataEnum) -> Tokens {
     let name = &ast.ident;
     let variants = &data_enum.variants;
     let (impl_generics, _ty_generics, where_clause) = ast.generics.split_for_impl();
-    let event_type_version = ast.attrs
+    let event_type_version = ast
+        .attrs
         .iter()
         .find(|attr| attr.path.segments[0].ident == "event_type_version")
         .map(|attr| {
@@ -86,7 +90,8 @@ fn impl_component_event(ast: &DeriveInput, data_enum: &DataEnum) -> Tokens {
         })
         .unwrap_or_else(|| parse_quote!(NoSchemaVersion));
 
-    let event_source = ast.attrs
+    let event_source = ast
+        .attrs
         .iter()
         .find(|attr| attr.path.segments[0].ident == "event_source")
         .map(|attr| {
@@ -124,7 +129,10 @@ fn impl_component_event(ast: &DeriveInput, data_enum: &DataEnum) -> Tokens {
     }
 }
 
-fn generate_event_matches(name: &Ident, variants: &Punctuated<Variant, Comma>) -> Vec<quote::Tokens> {
+fn generate_event_matches(
+    name: &Ident,
+    variants: &Punctuated<Variant, Comma>,
+) -> Vec<quote::Tokens> {
     let mut result = Vec::new();
     for (_idx, variant) in variants.iter().enumerate() {
         let id = &variant.ident;
@@ -138,7 +146,7 @@ fn generate_event_matches(name: &Ident, variants: &Punctuated<Variant, Comma>) -
                 quote! {
                     #name::#id( #(_#idents,)* ) => #et_name,
                 }
-            },
+            }
             Fields::Named(ref fields) => {
                 let idents: Vec<_> = fields.named.pairs().map(|p| p.value().ident).collect();
                 quote! {
@@ -161,7 +169,8 @@ fn impl_component(ast: &DeriveInput) -> Tokens {
     let name = &ast.ident;
     let (impl_generics, _ty_generics, where_clause) = ast.generics.split_for_impl();
 
-    let aggregate = ast.attrs
+    let aggregate = ast
+        .attrs
         .iter()
         .find(|attr| attr.path.segments[0].ident == "aggregate")
         .map(|attr| {

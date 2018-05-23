@@ -8,11 +8,7 @@ extern crate serde_json;
 #[macro_use]
 extern crate eventsourcing_derive;
 
-use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
-                    Aggregate,
-                    AggregateState,
-                    Event,
-                    Result};
+use eventsourcing::{eventstore::MemoryEventStore, prelude::*, Result};
 
 #[derive(Debug)]
 struct LocationData {

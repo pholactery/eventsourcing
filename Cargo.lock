@@ -140,10 +140,10 @@ dependencies = [
 
 [[package]]
 name = "eventsourcing"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "chrono 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "eventsourcing-derive 0.1.0",
+ "eventsourcing-derive 0.1.1",
  "reqwest 0.8.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde 1.0.43 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde_derive 1.0.43 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -153,7 +153,7 @@ dependencies = [
 
 [[package]]
 name = "eventsourcing-derive"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "quote 0.4.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "syn 0.12.15 (registry+https://github.com/rust-lang/crates.io-index)",

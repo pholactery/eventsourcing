@@ -1,9 +1,7 @@
-use eventsourcing::{eventstore::{EventStore, MemoryEventStore},
-                    Aggregate,
-                    AggregateState,
-                    Dispatcher,
-                    Event,
-                    Result};
+use eventsourcing::{
+    eventstore::{EventStore, MemoryEventStore}, Aggregate, AggregateState, Dispatcher, Event,
+    Result,
+};
 
 #[derive(Debug)]
 pub enum CombatCommand {
@@ -15,7 +13,7 @@ pub enum CombatCommand {
 #[event_source("events://github.com/pholactery/eventsourcing/samples/combat")]
 pub enum CombatEvent {
     EntityAttacked(String, u32),
-    RandomEvent { a: u32, b: u32},
+    RandomEvent { a: u32, b: u32 },
     UnitEvent,
 }
 
