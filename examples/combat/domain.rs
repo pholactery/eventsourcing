@@ -1,6 +1,5 @@
 use eventsourcing::{
-    eventstore::{EventStore, MemoryEventStore}, Aggregate, AggregateState, Dispatcher, Event,
-    Result,
+    Aggregate, AggregateState, Result,
 };
 
 #[derive(Debug)]
