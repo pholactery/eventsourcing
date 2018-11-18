@@ -31,6 +31,7 @@ members = ["eventsourcing-derive"]
 
 [[example]]
 name = "combat"
+required-features = ["orgeventstore"]
 
 [[example]]
 name = "bank"
