@@ -46,7 +46,7 @@ struct EventSourceAttribute {
 }
 
 struct EventTypeVersionAttribute {
-    event_type_version: LitStr,
+    event_type_version: Ident,
 }
 
 struct AggregateAttribute {
@@ -69,7 +69,7 @@ impl Synom for AggregateAttribute {
 
 impl Synom for EventTypeVersionAttribute {
     named!(parse -> Self, map!(
-        parens!(syn!(LitStr)),
+        parens!(syn!(Ident)),
         |(_, event_type_version) | EventTypeVersionAttribute { event_type_version }
     ));
 }
