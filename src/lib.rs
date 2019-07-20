@@ -125,7 +125,7 @@ use std::fmt;
 /// An event sourcing error
 #[derive(Debug)]
 pub struct Error {
-    kind: Kind,
+    pub kind: Kind,
 }
 
 impl std::error::Error for Error {
