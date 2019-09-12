@@ -55,7 +55,7 @@ fn generate_headers() -> Headers {
     headers
 }
 
-impl EventStore for OrgEventStore {
+impl EventStore<CloudEvent> for OrgEventStore {
     fn append(&self, evt: impl Event, stream: &str) -> Result<CloudEvent> {
         let ce: CloudEvent = evt.into();
         let se = vec![StoreEvent {

@@ -24,7 +24,7 @@ impl MemoryEventStore {
     }
 }
 
-impl EventStore for MemoryEventStore {
+impl EventStore<CloudEvent> for MemoryEventStore {
     /// Appends an event to the in-memory store
     fn append(&self, evt: impl Event, _stream: &str) -> Result<CloudEvent> {
         let mut guard = self.evts.lock().unwrap();

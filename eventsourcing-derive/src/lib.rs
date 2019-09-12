@@ -181,7 +181,7 @@ fn impl_component(ast: &DeriveInput) -> Tokens {
         .unwrap_or_else(|| parse_quote!(NoAggregate));
 
     quote! {
-        impl #impl_generics ::eventsourcing::Dispatcher for #name #where_clause {
+        impl #impl_generics ::eventsourcing::Dispatcher<T> for #name #where_clause {
             type Aggregate = #aggregate;
             type Event = <#aggregate as Aggregate>::Event;
             type Command = <#aggregate as Aggregate>::Command;
@@ -190,9 +190,9 @@ fn impl_component(ast: &DeriveInput) -> Tokens {
             fn dispatch(
                 state: &Self::State,
                 cmd: Self::Command,
-                store: &impl ::eventsourcing::eventstore::EventStore,
+                store: &impl ::eventsourcing::eventstore::EventStore<T>,
                 stream: &str,
-            ) -> Vec<Result<::eventsourcing::cloudevents::CloudEvent>> {
+            ) -> Vec<Result<T>> {
                 match Self::Aggregate::handle_command(state, cmd) {
                     Ok(evts) => evts.into_iter().map(|evt| store.append(evt, stream)).collect(),
                     Err(e) => vec![Err(e)],

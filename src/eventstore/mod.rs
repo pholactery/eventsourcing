@@ -1,5 +1,5 @@
 //! Event store trait and implementations
-use super::cloudevents::CloudEvent;
+
 use super::{Event, Result};
 
 pub use self::inmemory::MemoryEventStore;
@@ -8,8 +8,8 @@ pub use self::inmemory::MemoryEventStore;
 pub use self::orgeventstore::OrgEventStore;
 
 /// Trait required for event stores. For the moment, event stores are append-only
-pub trait EventStore {
-    fn append(&self, evt: impl Event, stream: &str) -> Result<CloudEvent>;
+pub trait EventStore<T> {
+    fn append(&self, evt: impl Event, stream: &str) -> Result<T>;
 }
 
 mod inmemory;

@@ -196,9 +196,8 @@ pub trait Aggregate {
 /// code for when you want to emit the events produced through the application of a command
 /// immediately to a store, for a given event stream name. You don't have to build a dispatcher
 /// yourself, you can use a derive macro to make a placeholder struct your dispatcher.
-/// The result of a dispatch is a vector capturing the success of command application. If it
-/// succeeded, you will get a CloudEvent, a CloudEvents v0.1 spec-compliant data structure.
-pub trait Dispatcher {
+/// The result of a dispatch is a vector capturing the success of command application.
+pub trait Dispatcher<T> {
     type Command;
     type Event: Event;
     type State: AggregateState;
@@ -207,9 +206,9 @@ pub trait Dispatcher {
     fn dispatch(
         state: &Self::State,
         cmd: Self::Command,
-        store: &impl EventStore,
+        store: &impl EventStore<T>,
         stream: &str,
-    ) -> Vec<Result<CloudEvent>>;
+    ) -> Vec<Result<T>>;
 }
 
 pub mod cloudevents;
