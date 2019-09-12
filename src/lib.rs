@@ -188,8 +188,8 @@ pub trait Aggregate {
     type Command;
     type State: AggregateState;
 
-    fn apply_event(state: &Self::State, evt: Self::Event) -> Result<Self::State>;
-    fn handle_command(state: &Self::State, cmd: Self::Command) -> Result<Vec<Self::Event>>;
+    fn apply_event(state: &Option<Self::State>, evt: Self::Event) -> Result<Self::State>;
+    fn handle_command(state: &Option<Self::State>, cmd: Self::Command) -> Result<Vec<Self::Event>>;
 }
 
 /// A dispatcher is a type of pipeline glue that eliminates a certain set of boilerplate
