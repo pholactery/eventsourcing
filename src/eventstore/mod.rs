@@ -8,8 +8,8 @@ pub use self::inmemory::MemoryEventStore;
 pub use self::orgeventstore::OrgEventStore;
 
 /// Trait required for event stores. For the moment, event stores are append-only
-pub trait EventStore<T> {
-    fn append(&self, evt: impl Event, stream: &str) -> Result<T>;
+pub trait EventStore<T, S> {
+    fn append(&self, evt: impl Event, store: S) -> Result<T>;
 }
 
 mod inmemory;

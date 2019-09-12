@@ -197,7 +197,7 @@ pub trait Aggregate {
 /// immediately to a store, for a given event stream name. You don't have to build a dispatcher
 /// yourself, you can use a derive macro to make a placeholder struct your dispatcher.
 /// The result of a dispatch is a vector capturing the success of command application.
-pub trait Dispatcher<T> {
+pub trait Dispatcher<T, S> {
     type Command;
     type Event: Event;
     type State: AggregateState;
@@ -206,7 +206,7 @@ pub trait Dispatcher<T> {
     fn dispatch(
         state: &Self::State,
         cmd: Self::Command,
-        store: &impl EventStore<T>,
+        store: &impl EventStore<T, S>,
         stream: &str,
     ) -> Vec<Result<T>>;
 }
