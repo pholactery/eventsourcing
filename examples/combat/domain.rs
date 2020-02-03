@@ -42,7 +42,7 @@ impl Aggregate for Combat {
     type Command = CombatCommand;
     type State = CombatState;
 
-    fn apply_event(state: &Self::State, evt: Self::Event) -> Result<Self::State> {
+    fn apply_event(_state: &Self::State, _evt: Self::Event) -> Result<Self::State> {
         unimplemented!()
     }
 
