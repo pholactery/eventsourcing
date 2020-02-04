@@ -69,7 +69,7 @@
 //!# enum LocationCommand {
 //!#    UpdateLocation { lat: f32, long: f32, alt: f32 },
 //!# }
-//!#[derive(Debug)]
+//!#[derive(Debug, Clone)]
 //!struct LocationData {
 //!    lat: f32,
 //!    long: f32,
@@ -88,20 +88,20 @@
 //!   type Command = LocationCommand;
 //!   type State = LocationData;
 //!
-//!   fn apply_event(state: &Self::State, evt: Self::Event) -> Result<Self::State> {
+//!   fn apply_event(state: &Self::State, evt: &Self::Event) -> Result<Self::State> {
 //!       // TODO: validate event
 //!       let ld = match evt {
 //!           LocationEvent::LocationUpdated { lat, long, alt } => LocationData {
-//!               lat,
-//!               long,
-//!               alt,
+//!               lat: *lat,
+//!               long: *long,
+//!               alt: *alt,
 //!               generation: state.generation + 1,
 //!           },
 //!       };
 //!       Ok(ld)
 //!   }
 //!
-//!   fn handle_command(_state: &Self::State, cmd: Self::Command) -> Result<Vec<Self::Event>> {
+//!   fn handle_command(_state: &Self::State, cmd: &Self::Command) -> Result<Vec<Self::Event>> {
 //!       // TODO: add code to validate state and command
 //!
 //!       // if validation passes...
