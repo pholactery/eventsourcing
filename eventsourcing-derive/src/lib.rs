@@ -83,10 +83,9 @@ fn impl_component_event(ast: &DeriveInput, data_enum: &DataEnum) -> Tokens {
         .iter()
         .find(|attr| attr.path.segments[0].ident == "event_type_version")
         .map(|attr| {
-            let x = syn::parse2::<EventTypeVersionAttribute>(attr.tts.clone())
+            syn::parse2::<EventTypeVersionAttribute>(attr.tts.clone())
                 .unwrap()
-                .event_type_version;
-            x
+                .event_type_version            
         })
         .unwrap_or_else(|| parse_quote!(NoSchemaVersion));
 
@@ -95,10 +94,9 @@ fn impl_component_event(ast: &DeriveInput, data_enum: &DataEnum) -> Tokens {
         .iter()
         .find(|attr| attr.path.segments[0].ident == "event_source")
         .map(|attr| {
-            let x = syn::parse2::<EventSourceAttribute>(attr.tts.clone())
+            syn::parse2::<EventSourceAttribute>(attr.tts.clone())
                 .unwrap()
-                .event_source;
-            x
+                .event_source
         })
         .unwrap_or_else(|| parse_quote!(NoEventSource));
 
@@ -189,7 +187,7 @@ fn impl_component(ast: &DeriveInput) -> Tokens {
 
             fn dispatch(
                 state: &Self::State,
-                cmd: Self::Command,
+                cmd: &Self::Command,
                 store: &impl ::eventsourcing::eventstore::EventStore,
                 stream: &str,
             ) -> Vec<Result<::eventsourcing::cloudevents::CloudEvent>> {

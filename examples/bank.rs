@@ -1,5 +1,3 @@
-#![feature(attr_literals)]
-
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -10,8 +8,10 @@ extern crate eventsourcing_derive;
 
 use eventsourcing::{eventstore::MemoryEventStore, prelude::*, Result};
 
+const DOMAIN_VERSION: &str = "1.0";
+
 #[derive(Serialize, Deserialize, Debug, Clone, Event)]
-#[event_type_version("1.0")]
+#[event_type_version(DOMAIN_VERSION)]
 #[event_source("events://github.com/pholactery/eventsourcing/samples/bank")]
 enum BankEvent {
     FundsWithdrawn(String, u32),
@@ -23,7 +23,7 @@ enum BankCommand {
     DepositFunds(String, u32),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct AccountData {
     acctnum: String,
     balance: u32,
@@ -43,8 +43,8 @@ impl Aggregate for Account {
     type State = AccountData;
     type Command = BankCommand;
 
-    fn apply_event(state: &Self::State, evt: Self::Event) -> Result<Self::State> {
-        let state = match evt {
+    fn apply_event(state: &Self::State, evt: &Self::Event) -> Result<Self::State> {
+        let state = match *evt {
             BankEvent::FundsWithdrawn(_, amt) => AccountData {
                 balance: state.balance - amt,
                 acctnum: state.acctnum.to_owned(),
@@ -59,20 +59,20 @@ impl Aggregate for Account {
         Ok(state)
     }
 
-    fn handle_command(_state: &Self::State, cmd: Self::Command) -> Result<Vec<Self::Event>> {
+    fn handle_command(_state: &Self::State, cmd: &Self::Command) -> Result<Vec<Self::Event>> {
         // SHOULD DO: validate state and command
 
         // if validation passes...
         let evts = match cmd {
-            BankCommand::DepositFunds(acct, amt) => vec![BankEvent::FundsDeposited(acct, amt)],
-            BankCommand::WithdrawFunds(acct, amt) => vec![BankEvent::FundsWithdrawn(acct, amt)],
+            BankCommand::DepositFunds(acct, amt) => vec![BankEvent::FundsDeposited(acct.clone(), *amt)],
+            BankCommand::WithdrawFunds(acct, amt) => vec![BankEvent::FundsWithdrawn(acct.clone(), *amt)],
         };
         Ok(evts)
     }
 }
 
 fn main() {
-    let account_store = MemoryEventStore::new();
+    let _account_store = MemoryEventStore::new();
 
     let deposit = BankCommand::DepositFunds("SAVINGS100".to_string(), 500);
 
@@ -82,12 +82,9 @@ fn main() {
         generation: 1,
     };
 
-    let post_deposit = Account::handle_command(&initial_state, deposit).unwrap();
-    let state = Account::apply_event(&initial_state, post_deposit[0].clone()).unwrap();
-
-    /*let state = evts.into_iter().fold(initial_state, |state, evt| {
-        Account::apply_event(&state, evt).unwrap()
-    }); */
+    let post_deposit = Account::handle_command(&initial_state, &deposit).unwrap();
+    let state = Account::apply_event(&initial_state, &post_deposit[0]).unwrap();
+    
 
     println!("{:#?}", post_deposit);
     println!("{:#?}", state);

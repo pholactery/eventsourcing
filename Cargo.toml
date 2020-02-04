@@ -1,6 +1,6 @@
 [package]
 name = "eventsourcing"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["autodidaddict <alothien@gmail.com>"]
 description = "Event Sourcing for Rust"
 documentation = "https://docs.rs/eventsourcing"
@@ -10,14 +10,15 @@ categories = ["asynchronous","data-structures","rust-patterns","simulation"]
 readme = "README.md"
 license = "MPL-2.0"
 homepage = "https://github.com/pholactery/eventsourcing"
+edition = "2018"
 
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
 serde_json = "1.0"
 serde_derive = "1.0"
 serde = "1.0"
-uuid =  { version = "0.6", features = ["v4"] }
-reqwest = { version = "0.8.5", optional = true }
+uuid =  { version = "0.8.1", features = ["v4"] }
+reqwest = { version = "0.10.1", features = ["json", "blocking"], optional = true }
 
 [features]
 default = []

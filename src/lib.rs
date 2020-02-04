@@ -34,15 +34,15 @@
 //! event variants are _verbs phrases in the past tense_. While this is by convention and
 //! not enforced via code, this is a good practice to adopt.
 //! ```rust
-//!# #![feature(attr_literals)]
 //!
 //!# extern crate serde;
 //!# #[macro_use] extern crate serde_derive;
 //!# extern crate eventsourcing;
 //!# extern crate serde_json;
 //!# #[macro_use] extern crate eventsourcing_derive;
+//!const DOMAIN_VERSION: &str = "1.0"; 
 //!#[derive(Serialize, Deserialize, Debug, Clone, Event)]
-//!#[event_type_version("1.0")]
+//!#[event_type_version(DOMAIN_VERSION)]
 //!#[event_source("events://github.com/pholactery/eventsourcing/samples/location")]
 //!enum LocationEvent {
 //!    LocationUpdated { lat: f32, long: f32, alt: f32 },
@@ -53,15 +53,15 @@
 //! With that in place, we write all of our business logic, the core of our event sourcing system,
 //! in the aggregate.
 //!```rust
-//!# #![feature(attr_literals)]
 //!# extern crate serde;
 //!# #[macro_use] extern crate serde_derive;
 //!# extern crate eventsourcing;
 //!# extern crate serde_json;
 //!# #[macro_use] extern crate eventsourcing_derive;
 //!# use eventsourcing::{prelude::*, Result};
+//!const DOMAIN_VERSION: &str = "1.0"; 
 //!# #[derive(Serialize, Deserialize, Debug, Clone, Event)]
-//!# #[event_type_version("1.0")]
+//!# #[event_type_version(DOMAIN_VERSION)]
 //!# #[event_source("events://github.com/pholactery/eventsourcing/samples/location")]
 //!# enum LocationEvent {
 //!#     LocationUpdated { lat: f32, long: f32, alt: f32 },
@@ -133,7 +133,7 @@ impl std::error::Error for Error {
         "An eventsourcing error ocurred"
     }
 
-    fn cause(&self) -> Option<&std::error::Error> {
+    fn cause(&self) -> Option<&dyn std::error::Error> {
         None
     }
 }
@@ -186,10 +186,15 @@ pub trait AggregateState {
 pub trait Aggregate {
     type Event: Event;
     type Command;
-    type State: AggregateState;
+    type State: AggregateState + Clone;
 
-    fn apply_event(state: &Self::State, evt: Self::Event) -> Result<Self::State>;
-    fn handle_command(state: &Self::State, cmd: Self::Command) -> Result<Vec<Self::Event>>;
+    fn apply_event(state: &Self::State, evt: &Self::Event) -> Result<Self::State>;
+    fn handle_command(state: &Self::State, cmd: &Self::Command) -> Result<Vec<Self::Event>>;
+    fn apply_all(state: &Self::State, evts: &[Self::Event]) -> Result<Self::State> {
+        Ok(evts.iter().fold(state.clone(), |acc_state, event| {
+            Self::apply_event(&acc_state, event).unwrap()
+        }))
+    }
 }
 
 /// A dispatcher is a type of pipeline glue that eliminates a certain set of boilerplate
@@ -201,12 +206,12 @@ pub trait Aggregate {
 pub trait Dispatcher {
     type Command;
     type Event: Event;
-    type State: AggregateState;
+    type State: AggregateState + Clone;
     type Aggregate: Aggregate<Event = Self::Event, Command = Self::Command, State = Self::State>;
 
     fn dispatch(
         state: &Self::State,
-        cmd: Self::Command,
+        cmd: &Self::Command,
         store: &impl EventStore,
         stream: &str,
     ) -> Vec<Result<CloudEvent>>;

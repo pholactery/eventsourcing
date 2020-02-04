@@ -1,11 +1,8 @@
 //! Implementation of Greg Young's Event Store (eventstore.org)
-extern crate reqwest;
-extern crate serde_json;
-extern crate uuid;
 
-use self::reqwest::header::{ContentType, Headers};
-use self::reqwest::mime;
-use self::reqwest::{Client, StatusCode};
+
+use reqwest::header::{CONTENT_TYPE, HeaderMap};
+use reqwest::StatusCode;
 use super::super::cloudevents::CloudEvent;
 use super::super::{Error, Event, Kind, Result};
 use super::EventStore;
@@ -29,7 +26,7 @@ impl OrgEventStore {
     pub fn new(host: &str, port: u16) -> OrgEventStore {
         OrgEventStore {
             host: host.to_owned(),
-            port: port,
+            port,
         }
     }
 
@@ -45,13 +42,10 @@ impl Default for OrgEventStore {
     }
 }
 
-fn generate_headers() -> Headers {
-    let mut headers = Headers::new();
-
-    let evtstoretype = "application/vnd.eventstore.events+json"
-        .parse::<mime::Mime>()
-        .unwrap();
-    headers.set(ContentType(evtstoretype));
+fn generate_headers() -> HeaderMap {
+    let mut headers = HeaderMap::new();
+    
+    headers.insert(CONTENT_TYPE, "application/vnd.eventstore.events+json".parse().unwrap());
     headers
 }
 
@@ -64,14 +58,14 @@ impl EventStore for OrgEventStore {
             data: ce.data.clone(),
         }];
 
-        let client = reqwest::Client::new();
+        let client = reqwest::blocking::Client::new();
 
         let url = self.build_stream_url(stream);
         let headers = generate_headers();
 
         match client.post(&url).json(&se).headers(headers).send() {
-            Ok(mut response) => {
-                if response.status() == StatusCode::Created {
+            Ok(response) => {
+                if response.status() == StatusCode::CREATED {
                     Ok(ce)
                 } else {
                     Err(Error {

@@ -1,5 +1,3 @@
-#![feature(attr_literals)]
-
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -29,6 +27,6 @@ fn main() {
     let unit = CombatEvent::UnitEvent;
     println!("{}", unit.event_type());
 
-    let res = CombatDispatcher::dispatch(&state, swing, &combat_store, "ogre");
+    let res = CombatDispatcher::dispatch(&state, &swing, &combat_store, "ogre");
     println!("dispatch results - {:#?}", res);
 }

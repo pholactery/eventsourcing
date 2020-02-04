@@ -39,7 +39,7 @@ where
             event_type: source.event_type().to_owned(),
             event_type_version: source.event_type_version().to_owned(),
             source: source.event_source().to_owned(),
-            event_id: Uuid::new_v4().hyphenated().to_string(),
+            event_id: Uuid::new_v4().to_hyphenated().to_string(),
             event_time: Utc::now(),
             content_type: "application/json".to_owned(),
             data: serde_json::from_str(&raw_data).unwrap(),

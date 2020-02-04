@@ -1,5 +1,3 @@
-#![feature(attr_literals)]
-
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
@@ -12,8 +10,10 @@ extern crate chrono;
 use chrono::prelude::*;
 use eventsourcing::prelude::*;
 
+const DOMAIN_VERSION: &str = "1.0";
+
 #[derive(Serialize, Deserialize, Event)]
-#[event_type_version("1.0")]
+#[event_type_version(DOMAIN_VERSION)]
 #[event_source("events://github.com/pholactery/eventsourcing/tests/integration")]
 enum TestEvent {
     Sample { val1: u32, val2: u32, val3: String },
@@ -44,9 +44,11 @@ fn cloud_event_roundtrip() {
     let s = serde_json::to_string(&ce).unwrap();
     let round_trip: CloudEvent = serde_json::from_str(&s).unwrap();
     let evtype = round_trip.event_type.clone();
+    let evtype_ver = round_trip.event_type_version.clone();
     let event2: TestEvent = round_trip.into();
 
     assert_eq!(evtype, "testevent.sample");
+    assert_eq!(evtype_ver, DOMAIN_VERSION);
 
     let TestEvent::Sample { val1, val2, val3 } = se;
     let TestEvent::Sample {

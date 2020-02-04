@@ -1,6 +1,6 @@
 [package]
 name = "eventsourcing-derive"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["autodidaddict <alothien@gmail.com>"]
 description = "Custom derive macros for Eventsourcing components"
 documentation = "https://docs.rs/eventsourcing-derive"
