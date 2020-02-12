@@ -64,8 +64,12 @@ impl Aggregate for Account {
 
         // if validation passes...
         let evts = match cmd {
-            BankCommand::DepositFunds(acct, amt) => vec![BankEvent::FundsDeposited(acct.clone(), *amt)],
-            BankCommand::WithdrawFunds(acct, amt) => vec![BankEvent::FundsWithdrawn(acct.clone(), *amt)],
+            BankCommand::DepositFunds(acct, amt) => {
+                vec![BankEvent::FundsDeposited(acct.clone(), *amt)]
+            }
+            BankCommand::WithdrawFunds(acct, amt) => {
+                vec![BankEvent::FundsWithdrawn(acct.clone(), *amt)]
+            }
         };
         Ok(evts)
     }
@@ -84,7 +88,6 @@ fn main() {
 
     let post_deposit = Account::handle_command(&initial_state, &deposit).unwrap();
     let state = Account::apply_event(&initial_state, &post_deposit[0]).unwrap();
-    
 
     println!("{:#?}", post_deposit);
     println!("{:#?}", state);

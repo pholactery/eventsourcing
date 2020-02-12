@@ -1,11 +1,10 @@
 //! Implementation of Greg Young's Event Store (eventstore.org)
 
-
-use reqwest::header::{CONTENT_TYPE, HeaderMap};
-use reqwest::StatusCode;
 use super::super::cloudevents::CloudEvent;
 use super::super::{Error, Event, Kind, Result};
 use super::EventStore;
+use reqwest::header::{HeaderMap, CONTENT_TYPE};
+use reqwest::StatusCode;
 
 /// Client for the eventstore.org Event Store
 pub struct OrgEventStore {
@@ -44,8 +43,11 @@ impl Default for OrgEventStore {
 
 fn generate_headers() -> HeaderMap {
     let mut headers = HeaderMap::new();
-    
-    headers.insert(CONTENT_TYPE, "application/vnd.eventstore.events+json".parse().unwrap());
+
+    headers.insert(
+        CONTENT_TYPE,
+        "application/vnd.eventstore.events+json".parse().unwrap(),
+    );
     headers
 }
 

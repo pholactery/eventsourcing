@@ -1,8 +1,6 @@
 const DOMAIN_VERSION: &str = "1.0";
 
-use eventsourcing::{
-    Aggregate, AggregateState, Result,
-};
+use eventsourcing::{Aggregate, AggregateState, Result};
 
 #[derive(Debug)]
 pub enum CombatCommand {
@@ -44,8 +42,10 @@ impl Aggregate for Combat {
     fn handle_command(_state: &Self::State, cmd: &Self::Command) -> Result<Vec<Self::Event>> {
         println!("Command handled: {:#?}", cmd);
         // SHOULD DO: validate state and command
-        let evt = match *cmd {            
-            CombatCommand::Attack(ref entity_id, pts) => CombatEvent::EntityAttacked(entity_id.clone(), pts),
+        let evt = match *cmd {
+            CombatCommand::Attack(ref entity_id, pts) => {
+                CombatEvent::EntityAttacked(entity_id.clone(), pts)
+            }
         };
 
         // if validation passes...
