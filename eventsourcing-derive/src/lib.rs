@@ -85,7 +85,7 @@ fn impl_component_event(ast: &DeriveInput, data_enum: &DataEnum) -> Tokens {
         .map(|attr| {
             syn::parse2::<EventTypeVersionAttribute>(attr.tts.clone())
                 .unwrap()
-                .event_type_version            
+                .event_type_version
         })
         .unwrap_or_else(|| parse_quote!(NoSchemaVersion));
 

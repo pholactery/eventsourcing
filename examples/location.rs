@@ -80,20 +80,19 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         long: 36.07,
         alt: 15.0,
         generation: 0,
-    };    
+    };
 
     // First, handle a command to get an event vector
     let res = Location::handle_command(&old_state, &update)?;
     // Second, apply the events to get a new state
     let state = Location::apply_all(&old_state, &res)?;
     // Third, append to store (can do this alternatively with a dispatcher)
-    let store_result = location_store.append(res[0].clone(), "locations")?;    
+    let store_result = location_store.append(res[0].clone(), "locations")?;
     println!("Store result: {:?}", store_result);
-    
 
     println!("Original state: {:?}", old_state);
     println!("Post-process state: {:?}", state);
-    
+
     println!(
         "all events - {:#?}",
         location_store.get_all("locationevent.locationupdated")

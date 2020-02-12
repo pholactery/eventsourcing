@@ -40,7 +40,7 @@
 //!# extern crate eventsourcing;
 //!# extern crate serde_json;
 //!# #[macro_use] extern crate eventsourcing_derive;
-//!const DOMAIN_VERSION: &str = "1.0"; 
+//!const DOMAIN_VERSION: &str = "1.0";
 //!#[derive(Serialize, Deserialize, Debug, Clone, Event)]
 //!#[event_type_version(DOMAIN_VERSION)]
 //!#[event_source("events://github.com/pholactery/eventsourcing/samples/location")]
@@ -59,7 +59,7 @@
 //!# extern crate serde_json;
 //!# #[macro_use] extern crate eventsourcing_derive;
 //!# use eventsourcing::{prelude::*, Result};
-//!const DOMAIN_VERSION: &str = "1.0"; 
+//!const DOMAIN_VERSION: &str = "1.0";
 //!# #[derive(Serialize, Deserialize, Debug, Clone, Event)]
 //!# #[event_type_version(DOMAIN_VERSION)]
 //!# #[event_source("events://github.com/pholactery/eventsourcing/samples/location")]
