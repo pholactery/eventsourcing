@@ -1,7 +1,9 @@
 //! Implementation of Greg Young's Event Store (eventstore.org)
 
+#[cfg(feature = "orgeventstore")]
 use super::super::cloudevents::CloudEvent;
 use super::super::{Error, Event, Kind, Result};
+#[cfg(feature = "orgeventstore")]
 use super::EventStore;
 use reqwest::header::{HeaderMap, CONTENT_TYPE};
 use reqwest::StatusCode;

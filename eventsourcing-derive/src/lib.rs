@@ -118,7 +118,7 @@ fn impl_component_event(ast: &DeriveInput, data_enum: &DataEnum) -> Tokens {
                 }
             }
         }
-
+        #[cfg(feature = "orgeventstore")]
         impl From<::eventsourcing::cloudevents::CloudEvent> for #name {
             fn from(__source: ::eventsourcing::cloudevents::CloudEvent) -> Self {
                 ::serde_json::from_str(&::serde_json::to_string(&__source.data).unwrap()).unwrap()

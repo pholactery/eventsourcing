@@ -8,6 +8,7 @@ extern crate eventsourcing_derive;
 extern crate chrono;
 
 use chrono::prelude::*;
+#[cfg(feature = "eventstore")]
 use eventsourcing::prelude::*;
 
 const DOMAIN_VERSION: &str = "1.0";
@@ -19,6 +20,7 @@ enum TestEvent {
     Sample { val1: u32, val2: u32, val3: String },
 }
 
+#[cfg(feature = "eventstore")]
 #[test]
 fn cloud_event_roundtrip() {
     // ensure that we can produce a cloud event with an arbitrary nested JSON value in the data

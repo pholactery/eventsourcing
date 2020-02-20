@@ -3,18 +3,21 @@
 //! This module provides an implementation of the event store trait for a simple in-memory
 //! cache. This is not an event store you should be using for production and we recommend
 //! it is recommended that you only use this for testing/demonstration purposes.
+
+#[cfg(feature = "eventstore")]
 use super::super::cloudevents::CloudEvent;
 use super::super::Event;
 use super::super::Result;
+#[cfg(feature = "eventstore")]
 use super::EventStore;
 use chrono::prelude::*;
 use std::sync::Mutex;
-
+#[cfg(feature = "eventstore")]
 /// An simple, in-memory implementation of the event store trait
 pub struct MemoryEventStore {
     evts: Mutex<Vec<CloudEvent>>,
 }
-
+#[cfg(feature = "eventstore")]
 impl MemoryEventStore {
     /// Creates a new in-memory event store. The resulting store is thread-safe.
     pub fn new() -> MemoryEventStore {
@@ -23,7 +26,7 @@ impl MemoryEventStore {
         }
     }
 }
-
+#[cfg(feature = "eventstore")]
 impl EventStore for MemoryEventStore {
     /// Appends an event to the in-memory store
     fn append(&self, evt: impl Event, _stream: &str) -> Result<CloudEvent> {
@@ -34,6 +37,7 @@ impl EventStore for MemoryEventStore {
     }
 }
 
+#[cfg(feature = "eventstore")]
 impl MemoryEventStore {
     pub fn get_all(&self, event_type: &str) -> Result<Vec<CloudEvent>> {
         let guard = self.evts.lock().unwrap();

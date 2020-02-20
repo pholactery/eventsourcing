@@ -115,9 +115,13 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
+#[cfg(feature = "eventstore")]
 extern crate uuid;
 
+#[cfg(feature = "eventstore")]
 use cloudevents::CloudEvent;
+
+#[cfg(feature = "eventstore")]
 use eventstore::EventStore;
 use serde::Serialize;
 use std::fmt;
@@ -203,6 +207,7 @@ pub trait Aggregate {
 /// yourself, you can use a derive macro to make a placeholder struct your dispatcher.
 /// The result of a dispatch is a vector capturing the success of command application. If it
 /// succeeded, you will get a CloudEvent, a CloudEvents v0.1 spec-compliant data structure.
+#[cfg(feature = "orgeventstore")]
 pub trait Dispatcher {
     type Command;
     type Event: Event;
@@ -217,6 +222,8 @@ pub trait Dispatcher {
     ) -> Vec<Result<CloudEvent>>;
 }
 
+#[cfg(feature = "eventstore")]
 pub mod cloudevents;
+
 pub mod eventstore;
 pub mod prelude;
