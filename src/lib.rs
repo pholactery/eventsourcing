@@ -119,7 +119,7 @@ extern crate serde_json;
 extern crate uuid;
 
 #[cfg(feature = "eventstore")]
-use cloudevents::CloudEvent;
+pub use cloudevents::CloudEvent;
 
 #[cfg(feature = "eventstore")]
 use eventstore::EventStore;
